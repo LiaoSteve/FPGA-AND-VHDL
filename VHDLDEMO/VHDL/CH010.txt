@@ -1,0 +1,508 @@
+--The IEEE standard 1164 package, declares std_logic, rising_edge(), etc.
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_arith.all;
+use IEEE.std_logic_unsigned.all;
+
+--This package is a version of the Synopsys package and has been 
+-- optimized for use with the Express compiler.
+library SYNOPSYS;
+use SYNOPSYS.attributes.all;
+
+--
+--*********************************************************
+-- INPORT4 : 4-BIT SIMPLE INPUT PORT
+--                    designed by Pei-Chong Tang, Jan. 1999
+--*********************************************************
+--
+entity INPORT4 is
+     port
+     (    DB   : inout STD_LOGIC_VECTOR (3 downto 0); --data bus
+          IP   : in    STD_LOGIC_VECTOR (3 downto 0); --input port
+          CS   : in    STD_LOGIC;                     --chip select
+          RD   : in    STD_LOGIC                      --read signal
+     );
+end INPORT4;
+
+architecture INPORT4_ARCH of INPORT4 is
+     signal T : STD_LOGIC;                  --tri-state signal
+begin
+--
+--*********************************************************
+--
+-- 4-BIT simple input port
+--
+     T  <= not RD and CS;                   --tri-state control
+     DB <= IP when T='1' else               --read to data bus
+           "ZZZZ";
+--
+--*********************************************************
+-- end of architechture
+--
+end INPORT4_ARCH;
+--The IEEE standard 1164 package, declares std_logic, rising_edge(), etc.
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_arith.all;
+use IEEE.std_logic_unsigned.all;
+
+--This package is a version of the Synopsys package and has been 
+-- optimized for use with the Express compiler.
+library SYNOPSYS;
+use SYNOPSYS.attributes.all;
+
+--
+--*********************************************************
+-- INPORT8 : 8-BIT SIMPLE INPUT PORT
+--                    designed by Pei-Chong Tang, Jan. 1999
+--*********************************************************
+--
+entity INPORT8 is
+     port
+     (    DB   : inout STD_LOGIC_VECTOR (7 downto 0);
+          IP   : in    STD_LOGIC_VECTOR (7 downto 0);
+          CS   : in    STD_LOGIC;
+          RD   : in    STD_LOGIC
+     );
+end INPORT8;
+
+architecture INPORT8_ARCH of INPORT8 is
+     signal T : STD_LOGIC;              --tri-state signal
+begin
+--
+--*********************************************************
+--
+-- 8-BIT simple input port
+--
+     T <= not RD and CS;                --tri-state control
+     DB <= IP when T='1' else           --read to data bus
+          "ZZZZZZZZ";
+--
+--*********************************************************
+-- end of architechture
+--
+end INPORT8_ARCH;
+--The IEEE standard 1164 package, declares std_logic, rising_edge(), etc.
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_arith.all;
+use IEEE.std_logic_unsigned.all;
+
+--This package is a version of the Synopsys package and has been 
+-- optimized for use with the Express compiler.
+library SYNOPSYS;
+use SYNOPSYS.attributes.all;
+
+--
+--*********************************************************
+-- IOPORT8 : 8-BIT INPUT/OUTPUT PORT
+--                    designed by Pei-Chong Tang, Jan. 1999
+--*********************************************************
+--
+entity IOPORT8 is
+     port
+     (    DB    : inout STD_LOGIC_VECTOR (7 downto 0); --data bus
+          IO    : inout STD_LOGIC_VECTOR (7 downto 0); --input/output
+          CS    : in    STD_LOGIC;                     --chip select
+          RD    : in    STD_LOGIC;                     --read signal
+          SWR   : in    STD_LOGIC;                     --sync. write
+          CLK   : in    STD_LOGIC                      --system clock
+     );
+end IOPORT8;
+
+architecture IOPORT8_ARCH of IOPORT8 is
+     signal Q : STD_LOGIC_VECTOR (7 downto 0);
+     signal T,EC : STD_LOGIC;
+begin
+--
+--*********************************************************
+--
+-- 8-BIT input/output port
+--
+     process (CLK)
+     begin
+          if CLK'event and CLK='1' then --CLK rising
+               if EC='1' then           --EC enable
+                    Q <= DB;            --write from data bus
+               end if;
+          end if;
+     end process;
+GEN: for I in 0 to 7 generate
+     IO(I) <= Q(I) when Q(I)='0' else   --open-collect output
+              'Z';
+     end generate;
+     DB <= IO when T='1' else           --read to data bus
+          "ZZZZZZZZ";
+     T  <= not RD and CS;               --tri-state control
+     EC <=    SWR and CS;               --write enable
+--
+--*********************************************************
+-- end of architechture
+--
+end IOPORT8_ARCH;
+--The IEEE standard 1164 package, declares std_logic, rising_edge(), etc.
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_arith.all;
+use IEEE.std_logic_unsigned.all;
+
+--This package is a version of the Synopsys package and has been 
+-- optimized for use with the Express compiler.
+library SYNOPSYS;
+use SYNOPSYS.attributes.all;
+
+--
+--*********************************************************
+-- OUTPORT4 : 4-BIT SIMPLE OUTPUT PORT
+--                    designed by Pei-Chong Tang, Jan. 1999
+--*********************************************************
+--
+entity OUTPORT4 is
+     port
+     (    DB   : inout STD_LOGIC_VECTOR (3 downto 0); --data bus
+          OP   : out   STD_LOGIC_VECTOR (3 downto 0); --output port
+          CS   : in    STD_LOGIC;                     --chip select
+          SWR  : in    STD_LOGIC;                     --sync write
+          CLK  : in    STD_LOGIC                      --system clock
+     );
+end OUTPORT4;
+
+architecture OUTPORT4_ARCH of OUTPORT4 is
+     signal EC : STD_LOGIC;
+begin
+--
+--*********************************************************
+--
+-- 8-BIT simple output port
+--
+     process (CLK)
+     begin
+          if CLK'event and CLK='1' then   --CLK rising
+               if EC='1' then             --CLK enable
+                    OP <= DB;             --latch output
+               end if;
+          end if;
+     end process;
+     EC <= SWR and CS;                    --CLK control
+--
+--*********************************************************
+-- end of architechture
+--
+end OUTPORT4_ARCH;
+--The IEEE standard 1164 package, declares std_logic, rising_edge(), etc.
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_arith.all;
+use IEEE.std_logic_unsigned.all;
+
+--This package is a version of the Synopsys package and has been 
+-- optimized for use with the Express compiler.
+library SYNOPSYS;
+use SYNOPSYS.attributes.all;
+
+--
+--*********************************************************
+-- OUTPORT8 : 8-BIT SIMPLE OUTPUT PORT
+--                    designed by Pei-Chong Tang, Jan. 1999
+--*********************************************************
+--
+entity OUTPORT8 is
+     port
+     (    DB   : inout STD_LOGIC_VECTOR (7 downto 0);
+          OP   : out   STD_LOGIC_VECTOR (7 downto 0);
+          CS   : in    STD_LOGIC;
+          WR   : in    STD_LOGIC
+     );
+end OUTPORT8;
+
+architecture OUTPORT8_ARCH of OUTPORT8 is
+begin
+--
+--*********************************************************
+--
+-- 8-BIT simple output port
+--
+     process (WR)
+     begin
+          if WR'event and WR='1' then   --WR rising edge
+               if CS='1' then           --CS enable
+                    OP <= DB;           --write from data bus
+               end if;
+          end if;
+     end process;
+--
+--*********************************************************
+-- end of architechture
+--
+end OUTPORT8_ARCH;
+--The IEEE standard 1164 package, declares std_logic, rising_edge(), etc.
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_arith.all;
+use IEEE.std_logic_unsigned.all;
+
+--This package is a version of the Synopsys package and has been 
+-- optimized for use with the Express compiler.
+library SYNOPSYS;
+use SYNOPSYS.attributes.all;
+
+--
+--*********************************************************
+-- PRINTER : printer port interface
+--                    designed by Pei-Chong Tang, Jan. 1999
+--*********************************************************
+--
+entity PRINTER is
+     port
+     (    CLK             : in    STD_LOGIC;                      --4MHz clock
+          DB              : inout STD_LOGIC_VECTOR (7 downto 0);  --data    bus
+          A               : out   STD_LOGIC_VECTOR (7 downto 0);  --address bus
+          AD              : in    STD_LOGIC_VECTOR (7 downto 0);  --data    input
+          DI3,DI4,DI5,DI7 : out   STD_LOGIC;                      --status  output
+          WR, RD, SEL,ALE : in    STD_LOGIC;                      --control input
+          SWR,SRD,SALE    : out   STD_LOGIC;                      --sync. control
+          CS              : in    STD_LOGIC                       --chip select
+     );
+end PRINTER;
+
+architecture PRINTER_ARCH of PRINTER is
+     signal RD1 : STD_LOGIC;
+     signal CNT : STD_LOGIC;
+     signal DQ  : STD_LOGIC_VECTOR (7 downto 0);
+     signal DM  : STD_LOGIC_VECTOR (3 downto 0);
+     signal RD0,ALE0 : STD_LOGIC;
+begin
+--
+--*********************************************************
+-- digital-filter for RD/WR/ALE signal
+--
+SIGNAL_FILTER : block
+     signal D1,D2,DIN,FLT,DLY : STD_LOGIC;
+begin
+     process (CLK)
+     begin
+          if CLK'event and CLK='1' then     --clock rising
+               D1<=DIN; D2<=D1;             --delay
+               DLY <= FLT;                  --delay and RS flip-flop
+               FLT <= (D1 and D2) or ((D1 or D2) and FLT);
+          end if;
+     end process;
+     DIN <= (not RD or not WR or not ALE) and SEL;
+     RD0  <= not RD  and FLT and not DLY;
+     ALE0 <= not ALE and FLT and not DLY;
+     SWR  <= not WR  and FLT and not DLY;
+     SALE <= ALE0;
+     SRD  <= RD0;
+end block SIGNAL_FILTER;
+--
+--*********************************************************
+-- address latch control
+--
+ADDRESS_LATCH : block
+begin
+     process (CLK)
+     begin
+          if CLK'event and CLK='1' then   --CLK  rising
+               if ALE0='1' then           --SALE enable
+                    A <= AD;              --address latch
+               end if;
+          end if;
+     end process;
+end block ADDRESS_LATCH;
+--
+--*********************************************************
+-- data bus write
+--
+DATA_WRITE : block
+begin
+     DB <= AD when WR='0' else            --enable data bus
+          "ZZZZZZZZ";
+end block DATA_WRITE;
+--
+--*********************************************************
+-- data bus latch
+--
+READ_LATCH : block
+     signal EC : STD_LOGIC;
+begin
+     process (CLK)
+     begin
+          if CLK'event and CLK='1' then   --CLK rising
+               if EC='1' then             --CLK enable
+                    DQ <= DB;             --data latch
+               end if;
+          end if;
+     end process;
+     EC <= RD0 and not CNT;
+end block READ_LATCH;
+--
+--*********************************************************
+-- data bus multiplexer
+--
+READ_MULTIPLEXER : block
+begin
+     DM <= DQ(3  downto 0) when CNT='1' else  --multiplexer
+           DQ(7  downto 4);
+end block READ_MULTIPLEXER;
+--
+--*********************************************************
+-- data bus read
+--
+READ_DATA : block
+begin
+     DI3 <=     DM(0) when CS='1' else 'Z';  --tri-state output
+     DI4 <=     DM(1) when CS='1' else 'Z';
+     DI5 <=     DM(2) when CS='1' else 'Z';
+     DI7 <= not DM(3) when CS='1' else 'Z';
+end block READ_DATA;
+--
+--*********************************************************
+-- read control
+--
+READ_CLOCK : block
+begin
+     process (CLK)
+     begin
+          if CLK'event and CLK='1' then     --clock rising
+               RD1<=RD0;                    --delay
+          end if;
+     end process;
+end block READ_CLOCK;
+--
+--*********************************************************
+-- read counter
+--
+READ_COUNTER : block
+     signal RST,EC : STD_LOGIC;
+begin
+     process (RD1,RST)
+     begin
+          if RST='1' then                   --preset
+               CNT <= '0';
+          elsif CLK'event and CLK='1' then  --CLK rising
+               if EC='1' then               --CLK enable
+                    CNT <= not CNT;         --counter+1
+               end if;
+          end if;
+     end process;
+     RST <= ALE0;
+     EC  <= RD1;
+end block READ_COUNTER;
+--
+--*********************************************************
+-- end of architecture
+--
+end PRINTER_ARCH;
+
+--The IEEE standard 1164 package, declares std_logic, rising_edge(), etc.
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_arith.all;
+use IEEE.std_logic_unsigned.all;
+
+--This package is a version of the Synopsys package and has been 
+-- optimized for use with the Express compiler.
+library SYNOPSYS;
+use SYNOPSYS.attributes.all;
+
+--
+--*********************************************************
+-- CH10 : practise TIMER and FREQUENCY GENERATOR
+--                    designed by Pei-Chong Tang, Jan. 1999
+--*********************************************************
+--
+entity CH10 is
+     port
+     (    CLK             : in    STD_LOGIC;                      --4MHz clock
+          AD              : in    STD_LOGIC_VECTOR (7 downto 0);  --data    input
+          WR, RD, SEL,ALE : in    STD_LOGIC;                      --control input
+          DI3,DI4,DI5,DI7 : out   STD_LOGIC;                      --status  output
+          XA,YA           : out   STD_LOGIC_VECTOR (3 downto 0);  --output port
+          XB,YB           : inout STD_LOGIC_VECTOR (7 downto 0);  --input/output
+          XC,YC           : in    STD_LOGIC_VECTOR (3 downto 0)   --input  port
+     );
+end CH10;
+
+architecture CH10_ARCH of CH10 is
+     component PRINTER    --***** printer interface *****
+     port
+     (    CLK             : in    STD_LOGIC;                      --system clock
+          DB              : inout STD_LOGIC_VECTOR (7 downto 0);  --data    bus
+          A               : out   STD_LOGIC_VECTOR (7 downto 0);  --address bus
+          AD              : in    STD_LOGIC_VECTOR (7 downto 0);  --data    input
+          DI3,DI4,DI5,DI7 : out   STD_LOGIC;                      --status  output
+          WR, RD, SEL,ALE : in    STD_LOGIC;                      --control input
+          SWR,SRD,SALE    : out   STD_LOGIC;                      --sync. control
+          CS              : in    STD_LOGIC                       --chip select
+     );
+     end component;
+     component INPORT4    --***** 4-BIT simple input *****
+     port
+     (    DB : inout STD_LOGIC_VECTOR (3 downto 0);  --data bus
+          IP : in    STD_LOGIC_VECTOR (3 downto 0);  --data input
+          CS : in    STD_LOGIC;                      --chip select
+          RD : in    STD_LOGIC                       --read control
+     );
+     end component;
+     component OUTPORT4   --***** 4-BIT simple output *****
+     port
+     (    DB  : inout STD_LOGIC_VECTOR (3 downto 0); --data bus
+          OP  : out   STD_LOGIC_VECTOR (3 downto 0); --data output
+          CS  : in    STD_LOGIC;                     --chip select
+          SWR : in    STD_LOGIC;                     --write control
+          CLK : in    STD_LOGIC                      --system clock
+     );
+     end component;
+     component IOPORT8   --***** 8-BIT input/output *****
+     port
+     (    DB  : inout STD_LOGIC_VECTOR (7 downto 0);  --data bus
+          IO  : inout STD_LOGIC_VECTOR (7 downto 0);  --input/output
+          CS  : in    STD_LOGIC;                      --chip select
+          RD  : in    STD_LOGIC;                      --read  control
+          SWR : in    STD_LOGIC;                      --write control
+          CLK : in    STD_LOGIC                       --system clock
+     );
+     end component;
+                         --***** global signals *****
+     signal DB : STD_LOGIC_VECTOR (7 downto 0);
+     signal A  : STD_LOGIC_VECTOR (7 downto 0);
+     signal CS,CS0,CS1,CS2,CS3 : STD_LOGIC;
+     signal SRD,SWR,SALE       : STD_LOGIC;
+begin
+--
+--*********************************************************
+--
+-- PRT-base programmable input/output control
+--
+SYSTEM_CONNECT : block
+begin
+     U1: PRINTER  port map (CLK,DB,A,
+                            AD,
+                            DI3, DI4, DI5, DI7,
+                            WR,  RD,  SEL, ALE,
+                            SWR, SRD, SALE,
+                            CS);
+     U2: OUTPORT4 port map (DB(3 downto 0), XA, CS0,     SWR, CLK);
+     U3: INPORT4  port map (DB(3 downto 0), XC, CS0, RD);
+     U4: IOPORT8  port map (DB,             XB, CS1, RD, SWR, CLK);
+     U5: OUTPORT4 port map (DB(3 downto 0), YA, CS2,     SWR, CLK);
+     U6: INPORT4  port map (DB(3 downto 0), YC, CS2, RD);
+     U7: IOPORT8  port map (DB,             YB, CS3, RD, SWR, CLK);
+end block SYSTEM_CONNECT;
+--
+--*********************************************************
+-- chip-select signals
+--
+CHIP_SELECT : block
+begin
+     CS <= '1' when A(7 downto 2)="000000" else '0';
+     CS0 <= CS and not A(1) and not A(0);
+     CS1 <= CS and not A(1) and     A(0);
+     CS2 <= CS and     A(1) and not A(0);
+     CS3 <= CS and     A(1) and     A(0);
+end block CHIP_SELECT;
+--
+--*********************************************************
+-- end of architechture
+--
+end CH10_ARCH;

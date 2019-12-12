@@ -1,0 +1,17 @@
+############################################## 
+#        I/O mapping for USB 3s1000 FPGA  board          # 
+##############################################  
+
+
+NET XB<0>  LOC = M3;
+NET XB<1>  LOC = M4;
+NET XB<2>  LOC = W3;
+NET XB<3>  LOC = W4;
+NET XB<4>  LOC = Y3;
+NET XB<5>  LOC = Y4;
+NET XB<6>  LOC = W6;
+NET XB<7>  LOC = Y6;
+NET XC<0>  LOC = V1;
+NET XC<1>  LOC = V2;
+NET XC<2>  LOC = W1;
+NET XC<3>  LOC = W2;
